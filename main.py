@@ -58,9 +58,17 @@ class Window(QtGui.QWidget):
         self.text_output = QtGui.QTextEdit(self)
         box.addWidget(self.text_output, 3, 1)
 
+        # Setting DFS button
+        button_dfs = QtGui.QPushButton("Perform DFS")
+        box.addWidget(button_dfs, 4, 0)
+
+        # Setting BFS button
+        button_bfs = QtGui.QPushButton("Perform BFS")
+        box.addWidget(button_bfs, 4, 1)
+
         # Setting the status label for error reporting
         self.status = QtGui.QLabel("Status: Ok...")
-        box.addWidget(self.status, 4, 0)
+        box.addWidget(self.status, 5, 0)
 
         # Creating a class-scope adjacency list and oriented toggle option
         self.al = list([])
