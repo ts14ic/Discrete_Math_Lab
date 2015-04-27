@@ -66,6 +66,7 @@ class Window(QtGui.QWidget):
 
         # Setting BFS button
         button_bfs = QtGui.QPushButton("Perform BFS")
+        button_bfs.clicked.connect(self.perform_bfs)
         box.addWidget(button_bfs, 4, 1)
 
         # Setting the status label for error reporting
@@ -83,33 +84,65 @@ class Window(QtGui.QWidget):
         :return:
         """
         if len(self.al) == 0:
-            self.status.setText("Status: Adjacency list empty!")
+            self.status.setText("Error: No adjacency list stored!")
             return
 
         self.dfs_result = ""
-        unvisited = deque(sorted(x for x in range(len(self.al))))
+        unvisited = deque(x for x in range(len(self.al)))
         stack = []
 
         while len(unvisited) > 0:
-            n = unvisited.popleft()     # if stack empty, get the leftmost element from unvisited
-            self.dfs_result += str(n)   # Set ready for printing
-            stack.append(n)             # Add to the stack
+            n = unvisited.popleft()         # If stack empty, get the leftmost element from unvisited
+            self.dfs_result += str(n+1)       # Set ready for printing
+            stack.append(n)                 # Add to the stack
             while len(stack) > 0:
                 top = stack[len(stack) - 1]
 
                 if top in unvisited:
-                    self.dfs_result += str(top)
+                    self.dfs_result += str(top+1)
                     unvisited.remove(top)
 
                 # Get all adjacent unvisited for top
-                adj = deque(x for x in self.al[top] if x in unvisited)
+                adj = [x for x in self.al[top] if x in unvisited]
 
                 if len(adj) > 0:
                     stack.append(adj[0])
                 else:
                     stack.remove(top)
 
-        self.status.setText("DFS result: " + self.dfs_result)
+        self.status.setText("DFS result: " + "->".join(self.dfs_result))
+
+    def perform_bfs(self):
+        """
+        Performs Breadth-First search and sets the status
+        :return:
+        """
+        if len(self.al) == 0:
+            self.status.setText("Error: No adjacency list stored!")
+            return
+
+        self.bfs_result = ""
+        unvisited = deque(x for x in range(len(self.al)))
+        queue = []
+
+        while len(unvisited) > 0:
+            n = unvisited.popleft()         # Get lefmost unvisited node
+            self.bfs_result += str(n+1)       # Set ready for printing
+            queue.append(n)                 # Add the node to queue
+            while len(queue) > 0:
+                tip = queue[0]              # Remember the begining of queue
+
+                if tip in unvisited:
+                    self.bfs_result += str(tip+1)
+                    unvisited.remove(tip)
+
+                # Get all adjacent unvisited nodes and queue them
+                adj = [x for x in self.al[tip] if x in unvisited]
+                queue += adj
+
+                queue.remove(tip)
+
+        self.status.setText("BFS result: " + "->".join(self.bfs_result))
 
     def process_graph(self):
         """
