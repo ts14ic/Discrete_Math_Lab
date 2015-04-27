@@ -1,6 +1,7 @@
 from PyQt4 import QtGui
 import sys
 import re
+from collections import deque
 
 
 class Window(QtGui.QWidget):
@@ -60,6 +61,7 @@ class Window(QtGui.QWidget):
 
         # Setting DFS button
         button_dfs = QtGui.QPushButton("Perform DFS")
+        button_dfs.clicked.connect(self.perform_dfs)
         box.addWidget(button_dfs, 4, 0)
 
         # Setting BFS button
@@ -71,7 +73,43 @@ class Window(QtGui.QWidget):
         box.addWidget(self.status, 5, 0)
 
         # Creating a class-scope adjacency list and oriented toggle option
-        self.al = list([])
+        self.al = list()
+        self.dfs_result = str()
+        self.bfs_result = str()
+
+    def perform_dfs(self):
+        """
+        Performs a Depth First Search and prints the result in status bar
+        :return:
+        """
+        if len(self.al) == 0:
+            self.status.setText("Status: Adjacency list empty!")
+            return
+
+        self.dfs_result = ""
+        unvisited = deque(sorted(x for x in range(len(self.al))))
+        stack = []
+
+        while len(unvisited) > 0:
+            n = unvisited.popleft()     # if stack empty, get the leftmost element from unvisited
+            self.dfs_result += str(n)   # Set ready for printing
+            stack.append(n)             # Add to the stack
+            while len(stack) > 0:
+                top = stack[len(stack) - 1]
+
+                if top in unvisited:
+                    self.dfs_result += str(top)
+                    unvisited.remove(top)
+
+                # Get all adjacent unvisited for top
+                adj = deque(x for x in self.al[top] if x in unvisited)
+
+                if len(adj) > 0:
+                    stack.append(adj[0])
+                else:
+                    stack.remove(top)
+
+        self.status.setText("DFS result: " + self.dfs_result)
 
     def process_graph(self):
         """
