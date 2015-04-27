@@ -127,7 +127,7 @@ class Window(QtGui.QWidget):
 
         while len(unvisited) > 0:
             n = unvisited.popleft()         # Get lefmost unvisited node
-            self.bfs_result += str(n+1)       # Set ready for printing
+            self.bfs_result += str(n+1)     # Set ready for printing
             queue.append(n)                 # Add the node to queue
             while len(queue) > 0:
                 tip = queue[0]              # Remember the begining of queue
@@ -141,8 +141,8 @@ class Window(QtGui.QWidget):
                 queue += adj
 
                 queue.remove(tip)
-
         self.status.setText("BFS result: " + "->".join(self.bfs_result))
+
 
     def process_graph(self):
         """
