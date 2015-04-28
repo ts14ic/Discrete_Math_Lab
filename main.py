@@ -64,15 +64,23 @@ class Window(QtGui.QWidget):
         self.text_output = QtGui.QTextBrowser(self)
         box.addWidget(self.text_output, 3, 1)
 
-        # Setting DFS button
+        # Setting the search buttons
+        buttons_search = QtGui.QHBoxLayout()
         button_dfs = QtGui.QPushButton("Perform DFS")
         button_dfs.clicked.connect(self.perform_dfs)
-        box.addWidget(button_dfs, 4, 0)
+        buttons_search.addWidget(button_dfs)
 
         # Setting BFS button
         button_bfs = QtGui.QPushButton("Perform BFS")
         button_bfs.clicked.connect(self.perform_bfs)
-        box.addWidget(button_bfs, 4, 1)
+        buttons_search.addWidget(button_bfs)
+
+        box.addLayout(buttons_search, 4, 0)
+
+        # Setting the spanning tree button
+        button_spantree = QtGui.QPushButton("Get spanning tree")
+        button_spantree.clicked.connect(self.get_span_tree)
+        box.addWidget(button_spantree, 4, 1)
 
         # Setting the status label for error reporting
         self.status = QtGui.QLabel("Status: Ok...")
@@ -148,6 +156,43 @@ class Window(QtGui.QWidget):
                 queue.remove(tip)
         self.status.setText("BFS result: " + "->".join(self.bfs_result))
 
+    def print_node_power(self):
+        """
+        Prints the node power for a node
+        :return:
+        """
+        if len(self.al) == 0:
+            self.status.setText("Error: No adjacency list stored!")
+            return
+
+        num, ok = QtGui.QInputDialog.getText(QtGui.QInputDialog(), "Node power", "Enter node number")
+        if not ok:
+            return
+
+        node = int(re.search("[1-9][0-9]*", num).group())-1
+
+        row = self.al[node][1:]
+        power = 0
+        for i in row:
+            power += 1
+            if i == node:
+                power += 1
+
+        self.status.setText("Node {} power: {}".format(node+1, power))
+
+    def get_span_tree(self):
+        """
+        Prints the spanning tree of our graph
+        :return:
+        """
+        if len(self.al) == 0:
+            self.status.setText("Error: No adjacency list stored!")
+            return
+
+        al = self.al.copy()
+
+        QtGui.QMessageBox.information(QtGui.QMessageBox(), "Spanning tree", str(al), QtGui.QMessageBox.Ok)
+
     def process_graph(self):
         """
         Summon the processing code
@@ -168,26 +213,6 @@ class Window(QtGui.QWidget):
         if self.combo_output.currentIndex() == 2:
             self.print_al()
 
-    def print_node_power(self):
-        if len(self.al) == 0:
-            self.status.setText("Error: No adjacency list stored")
-            return
-
-        num, ok = QtGui.QInputDialog.getText(QtGui.QInputDialog(), "Node power", "Enter node number")
-        if not ok:
-            return
-
-        node = int(re.search("[1-9][0-9]*", num).group())-1
-
-        row = self.al[node][1:]
-        power = 0
-        for i in row:
-            power += 1
-            if i == node:
-                power += 1
-
-        self.status.setText("Node {} power: {}".format(node+1, power))
-
     def get_im(self):
         """
         Get the incidence matrix
@@ -199,7 +224,7 @@ class Window(QtGui.QWidget):
 
         # Extract every digit, (with - sign, if one exists)
         for i in range(len(im)):
-            im[i] = re.findall(r"-?1|0|2 ", im[i])
+            im[i] = re.findall(r"-?1|0|2", im[i])
 
         # Delete empty rows
         im = [x for x in im if x != []]
@@ -295,6 +320,8 @@ class Window(QtGui.QWidget):
         :param im:
         :return:
         """
+        if not im:
+            return
         am = self.im2am(im)
         self.am2al(am)
 
@@ -305,12 +332,15 @@ class Window(QtGui.QWidget):
         :param im:
         :return list:
         """
+        if not im:
+            return
+
         vertices = len(im)
         nodes = len(im[0])
         am = [[0]*nodes for _ in range(nodes)]
 
         for v in range(vertices):
-            if im[v].count(2) > 0:
+            if 2 in im[v]:
                 c = im[v].index(2)
                 am[c][c] = 1
             else:
@@ -326,6 +356,9 @@ class Window(QtGui.QWidget):
         Convert adjacency matrix to incidence matrix
         :return list:
         """
+        if not am:
+            return
+
         nodes = len(am)
         im = []
 
@@ -349,6 +382,9 @@ class Window(QtGui.QWidget):
         :param am:
         :return:
         """
+        if not am:
+            return
+
         al = []
         nodes = len(am)
 
@@ -365,6 +401,9 @@ class Window(QtGui.QWidget):
         Display incidence matrix on the output textbox
         :return:
         """
+        if not self.al:
+            return
+
         im = self.al2im()
 
         im = [[repr(x) for x in im[i]] for i in range(len(im))]
@@ -380,6 +419,9 @@ class Window(QtGui.QWidget):
         Display adjacency matrix on the output textbox
         :return:
         """
+        if not self.al:
+            return
+
         am = self.al2am()
 
         am = [[repr(x) for x in am[i]] for i in range(len(am))]
@@ -395,6 +437,9 @@ class Window(QtGui.QWidget):
         Display adjacency matrix
         :return:
         """
+        if not self.al:
+            return
+
         # Get a copy of stored adjacency list
         al = self.al.copy()
 
