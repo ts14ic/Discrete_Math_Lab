@@ -9,6 +9,7 @@ class Window(QtGui.QWidget):
     Discrete Math program main window
     """
 
+    # noinspection PyUnresolvedReferences
     def __init__(self):
         """
         Construct the main window
@@ -165,11 +166,20 @@ class Window(QtGui.QWidget):
             self.status.setText("Error: No adjacency list stored!")
             return
 
-        num, ok = QtGui.QInputDialog.getText(QtGui.QInputDialog(), "Node power", "Enter node number")
+        num, ok = QtGui.QInputDialog.getText(QtGui.QInputDialog(), "Node power", "Enter node number",
+                                             QtGui.QLineEdit.Normal)
         if not ok:
             return
 
-        node = int(re.search("[1-9][0-9]*", num).group())-1
+        node = re.search("[1-9][0-9]*", num)
+        if not node:
+            self.status.setText("Error: Can't get node number. Try again")
+            return
+
+        node = int(node.group()) - 1
+        if node >= len(self.al) or node == -1:
+            self.status.setText("Error: There is no {} node in adjacency list".format(node+1))
+            return
 
         row = self.al[node][1:]
         power = 0
@@ -178,7 +188,7 @@ class Window(QtGui.QWidget):
             if i == node:
                 power += 1
 
-        self.status.setText("Node {} power: {}".format(node+1, power))
+        self.status.setText("Status: Node {} power: {}".format(node+1, power))
 
     def get_span_tree(self):
         """
@@ -350,32 +360,6 @@ class Window(QtGui.QWidget):
 
         return am
 
-    @staticmethod
-    def am2im(am) -> list:
-        """
-        Convert adjacency matrix to incidence matrix
-        :return list:
-        """
-        if not am:
-            return
-
-        nodes = len(am)
-        im = []
-
-        vertice = int(0)
-        for n in range(nodes):
-            for c in range(len(am[n])):
-                if am[n][c] == 1:
-                    im.append([0]*nodes)
-                    if n == c:
-                        im[vertice][n] = 2
-                    else:
-                        im[vertice][n] = -1
-                        im[vertice][c] = 1
-                    vertice += 1
-
-        return im
-
     def am2al(self, am):
         """
         Convert adjacency matrix to adjacency list
@@ -476,6 +460,32 @@ class Window(QtGui.QWidget):
                 am[n][row[v]] = 1
 
         return am
+
+    @staticmethod
+    def am2im(am) -> list:
+        """
+        Convert adjacency matrix to incidence matrix
+        :return list:
+        """
+        if not am:
+            return
+
+        nodes = len(am)
+        im = []
+
+        vertice = int(0)
+        for n in range(nodes):
+            for c in range(len(am[n])):
+                if am[n][c] == 1:
+                    im.append([0]*nodes)
+                    if n == c:
+                        im[vertice][n] = 2
+                    else:
+                        im[vertice][n] = -1
+                        im[vertice][c] = 1
+                    vertice += 1
+
+        return im
 
 
 def main():
