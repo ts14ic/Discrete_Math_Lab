@@ -271,10 +271,11 @@ class Window(QtGui.QWidget):
         for i in im:
             if len(i) != len(im[0]):
                 self.status.setText("Status: IM size is not persistent!")
-                break
+                return
         else:
             if len(im) == 0:
                 self.status.setText("Status: IM is empty!")
+                return
             else:
                 self.status.setText("Status: Ok...")
 
@@ -305,12 +306,14 @@ class Window(QtGui.QWidget):
         for i in am:
             if len(i) != len(am[0]):
                 self.status.setText("Status: AM size is not persistent!")
-                break
+                return
         else:
             if len(am) == 0:
                 self.status.setText("Status: AM is empty!")
+                return
             elif len(am[0]) != len(am):
                 self.status.setText("Status: AM is not square")
+                return
             else:
                 self.status.setText("Status: Ok...")
 
@@ -343,6 +346,7 @@ class Window(QtGui.QWidget):
         # Check for user-input errors.
         if len(al) == 0:
             self.status.setText("Status: AL is empty!")
+            return
         else:
             self.status.setText("Status: Ok...")
 
