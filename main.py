@@ -199,9 +199,34 @@ class Window(QtGui.QWidget):
             self.status.setText("Error: No adjacency list stored!")
             return
 
-        al = self.al.copy()
+        span_tree = [[] for _ in range(len(self.al))]
+        unvisited = deque(x for x in range(len(self.al)))
+        queue = []
 
-        QtGui.QMessageBox.information(QtGui.QMessageBox(), "Spanning tree", str(al), QtGui.QMessageBox.Ok)
+        while len(unvisited) > 0:
+            queue.append(unvisited[0])      # Add leftmost unvisited node to queue
+            while len(queue) > 0:
+                tip = queue[0]              # Remember the begining of queue
+
+                if tip in unvisited:
+                    unvisited.remove(tip)
+                    span_tree[tip].append(tip)
+                    span_tree[tip] += [x for x in self.al[tip] if (x in unvisited) and (x not in queue)]
+
+                # Get all adjacent unvisited nodes and queue them
+                queue += [x for x in self.al[tip] if x in unvisited]
+                queue.remove(tip)
+
+        span_tree = [[str(x+1) for x in row]for row in span_tree]
+        for i in range(len(span_tree)):
+            if len(span_tree[i]) != 1:
+                span_tree[i] = span_tree[i][0] + ": " + ", ".join(span_tree[i][1:]) + ", 0"
+            else:
+                span_tree[i] = span_tree[i][0] + ": 0"
+        # noinspection PyTypeChecker
+        span_tree = "\n".join(span_tree)
+
+        QtGui.QMessageBox.information(QtGui.QMessageBox(), "Spanning tree", str(span_tree), QtGui.QMessageBox.Ok)
 
     def process_graph(self):
         """
