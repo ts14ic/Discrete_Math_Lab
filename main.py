@@ -173,14 +173,13 @@ class Window(QtGui.QWidget):
             self.status.setText("Error: No adjacency list stored")
             return
 
-        num, ok = QtGui.QInputDialog.getText(self, "Node power", "Enter node number")
+        num, ok = QtGui.QInputDialog.getText(QtGui.QInputDialog(), "Node power", "Enter node number")
         if not ok:
             return
 
         node = int(re.search("[1-9][0-9]*", num).group())-1
 
         row = self.al[node][1:]
-        print(row)
         power = 0
         for i in row:
             power += 1
