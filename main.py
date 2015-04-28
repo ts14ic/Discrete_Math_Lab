@@ -3,7 +3,6 @@ import sys
 import re
 from collections import deque
 
-
 class Window(QtGui.QWidget):
     """
     Discrete Math program main window
@@ -56,7 +55,7 @@ class Window(QtGui.QWidget):
         box.addWidget(button_process, 2, 1)
 
         # Setting the output text area to remember
-        self.text_output = QtGui.QTextEdit(self)
+        self.text_output = QtGui.QTextBrowser(self)
         box.addWidget(self.text_output, 3, 1)
 
         # Setting DFS button
@@ -142,7 +141,6 @@ class Window(QtGui.QWidget):
 
                 queue.remove(tip)
         self.status.setText("BFS result: " + "->".join(self.bfs_result))
-
 
     def process_graph(self):
         """
