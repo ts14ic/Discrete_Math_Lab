@@ -3,6 +3,7 @@ import sys
 import re
 from collections import deque
 
+
 class Window(QtGui.QWidget):
     """
     Discrete Math program main window
@@ -52,7 +53,12 @@ class Window(QtGui.QWidget):
         # Setting the apply button and connect it to processing code
         button_process = QtGui.QPushButton("Process")
         button_process.clicked.connect(self.process_graph)
-        box.addWidget(button_process, 2, 1)
+        box.addWidget(button_process, 2, 0)
+
+        # Setting the node power button
+        button_nodepower = QtGui.QPushButton("Node power")
+        button_nodepower.clicked.connect(self.print_node_power)
+        box.addWidget(button_nodepower, 2, 1)
 
         # Setting the output text area to remember
         self.text_output = QtGui.QTextBrowser(self)
@@ -162,6 +168,27 @@ class Window(QtGui.QWidget):
         if self.combo_output.currentIndex() == 2:
             self.print_al()
 
+    def print_node_power(self):
+        if len(self.al) == 0:
+            self.status.setText("Error: No adjacency list stored")
+            return
+
+        num, ok = QtGui.QInputDialog.getText(self, "Node power", "Enter node number")
+        if not ok:
+            return
+
+        node = int(re.search("[1-9][0-9]*", num).group())-1
+
+        row = self.al[node][1:]
+        print(row)
+        power = 0
+        for i in row:
+            power += 1
+            if i == node:
+                power += 1
+
+        self.status.setText("Node {} power: {}".format(node+1, power))
+
     def get_im(self):
         """
         Get the incidence matrix
@@ -173,7 +200,7 @@ class Window(QtGui.QWidget):
 
         # Extract every digit, (with - sign, if one exists)
         for i in range(len(im)):
-            im[i] = re.findall(r"-?1|0|2", im[i])
+            im[i] = re.findall(r"-?1|0|2 ", im[i])
 
         # Delete empty rows
         im = [x for x in im if x != []]
@@ -272,7 +299,8 @@ class Window(QtGui.QWidget):
         am = self.im2am(im)
         self.am2al(am)
 
-    def im2am(self, im) -> list:
+    @staticmethod
+    def im2am(im) -> list:
         """
         Convert incidence matrix to adjacency matrix
         :param im:
@@ -293,7 +321,8 @@ class Window(QtGui.QWidget):
 
         return am
 
-    def am2im(self, am) -> list:
+    @staticmethod
+    def am2im(am) -> list:
         """
         Convert adjacency matrix to incidence matrix
         :return list:
