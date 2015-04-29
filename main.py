@@ -214,7 +214,7 @@ class Window(QtGui.QWidget):
                     span_tree[tip] += [x for x in self.al[tip] if (x in unvisited) and (x not in queue)]
 
                 # Get all adjacent unvisited nodes and queue them
-                queue += [x for x in self.al[tip] if x in unvisited]
+                queue += [x for x in self.al[tip] if (x in unvisited) and (x not in queue)]
                 queue.remove(tip)
 
         span_tree = [[str(x+1) for x in row]for row in span_tree]
