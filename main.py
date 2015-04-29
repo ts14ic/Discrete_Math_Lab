@@ -240,6 +240,7 @@ class Window(QtGui.QWidget):
         span_tree = "\n".join(span_tree)
 
         QtGui.QMessageBox.information(QtGui.QMessageBox(), "Spanning tree", str(span_tree), QtGui.QMessageBox.Ok)
+        self.status.setText("Status: Ok...")
 
     def process_graph(self):
         """
