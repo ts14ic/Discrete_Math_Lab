@@ -201,21 +201,23 @@ class Window(QtGui.QWidget):
 
         span_tree = [[] for _ in range(len(self.al))]
         unvisited = deque(x for x in range(len(self.al)))
-        queue = []
+        queue = [unvisited[0]]
 
-        while len(unvisited) > 0:
-            queue.append(unvisited[0])      # Add leftmost unvisited node to queue
-            while len(queue) > 0:
-                tip = queue[0]              # Remember the begining of queue
+        while len(queue) > 0:
+            tip = queue[0]              # Remember the begining of queue
 
-                if tip in unvisited:
-                    unvisited.remove(tip)
-                    span_tree[tip].append(tip)
-                    span_tree[tip] += [x for x in self.al[tip] if (x in unvisited) and (x not in queue)]
+            if tip in unvisited:
+                unvisited.remove(tip)
+                span_tree[tip].append(tip)
+                span_tree[tip] += [x for x in self.al[tip] if (x in unvisited) and (x not in queue)]
 
-                # Get all adjacent unvisited nodes and queue them
-                queue += [x for x in self.al[tip] if (x in unvisited) and (x not in queue)]
-                queue.remove(tip)
+            # Get all adjacent unvisited nodes and queue them
+            queue += [x for x in self.al[tip] if (x in unvisited) and (x not in queue)]
+            queue.remove(tip)
+
+        if len(unvisited) > 0:
+            self.status.setText("Error: The graph is not coherent!")
+            return
 
         span_tree = [[str(x+1) for x in row]for row in span_tree]
         for i in range(len(span_tree)):
