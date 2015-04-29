@@ -101,19 +101,19 @@ class Window(QtGui.QWidget):
             self.status.setText("Error: No adjacency list stored!")
             return
 
-        self.dfs_result = ""
+        self.dfs_result = []
         unvisited = deque(x for x in range(len(self.al)))
         stack = []
 
         while len(unvisited) > 0:
             n = unvisited.popleft()         # If stack empty, get the leftmost element from unvisited
-            self.dfs_result += str(n+1)       # Set ready for printing
+            self.dfs_result += [str(n+1)]          # Set ready for printing
             stack.append(n)                 # Add to the stack
             while len(stack) > 0:
                 top = stack[len(stack) - 1]
 
                 if top in unvisited:
-                    self.dfs_result += str(top+1)
+                    self.dfs_result += [str(top+1)]
                     unvisited.remove(top)
 
                 # Get all adjacent unvisited for top
@@ -135,19 +135,19 @@ class Window(QtGui.QWidget):
             self.status.setText("Error: No adjacency list stored!")
             return
 
-        self.bfs_result = ""
+        self.bfs_result = []
         unvisited = deque(x for x in range(len(self.al)))
         queue = []
 
         while len(unvisited) > 0:
             n = unvisited.popleft()         # Get lefmost unvisited node
-            self.bfs_result += str(n+1)     # Set ready for printing
+            self.bfs_result += [str(n+1)]   # Set ready for printing
             queue.append(n)                 # Add the node to queue
             while len(queue) > 0:
                 tip = queue[0]              # Remember the begining of queue
 
                 if tip in unvisited:
-                    self.bfs_result += str(tip+1)
+                    self.bfs_result += [str(tip+1)]
                     unvisited.remove(tip)
 
                 # Get all adjacent unvisited nodes and queue them
@@ -199,9 +199,24 @@ class Window(QtGui.QWidget):
             self.status.setText("Error: No adjacency list stored!")
             return
 
+        node, ok = QtGui.QInputDialog.getText(QtGui.QInputDialog(), "Span tree", "Enter the node to start",
+                                              QtGui.QLineEdit.Normal)
+        if not ok:
+            return
+
+        node = re.search(r"[1-9][0-9]*", node)
+        if not node:
+            self.status.setText("Error: Can't get node number to start a span tree search!")
+            return
+        else:
+            node = int(node.group()) - 1
+            if node >= len(self.al):
+                self.status.setText("Error: No {} element in adjacency list!".format(node+1))
+                return
+
         span_tree = [[] for _ in range(len(self.al))]
-        unvisited = deque(x for x in range(len(self.al)))
-        queue = [unvisited[0]]
+        unvisited = list(x for x in range(len(self.al)))
+        queue = [unvisited[node]]
 
         while len(queue) > 0:
             tip = queue[0]              # Remember the begining of queue
@@ -215,11 +230,7 @@ class Window(QtGui.QWidget):
             queue += [x for x in self.al[tip] if (x in unvisited) and (x not in queue)]
             queue.remove(tip)
 
-        if len(unvisited) > 0:
-            self.status.setText("Error: The graph is not coherent!")
-            return
-
-        span_tree = [[str(x+1) for x in row]for row in span_tree]
+        span_tree = [[str(x+1) for x in row]for row in span_tree if row]
         for i in range(len(span_tree)):
             if len(span_tree[i]) != 1:
                 span_tree[i] = span_tree[i][0] + ": " + ", ".join(span_tree[i][1:]) + ", 0"
