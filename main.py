@@ -117,7 +117,7 @@ class Window(QtGui.QWidget):
                     unvisited.remove(top)
 
                 # Get all adjacent unvisited for top
-                adj = [x for x in self.al[top] if x in unvisited]
+                adj = [x for x in self.al[top] if (x in unvisited) and (x not in stack)]
 
                 if len(adj) > 0:
                     stack.append(adj[0])
@@ -151,7 +151,7 @@ class Window(QtGui.QWidget):
                     unvisited.remove(tip)
 
                 # Get all adjacent unvisited nodes and queue them
-                adj = [x for x in self.al[tip] if x in unvisited]
+                adj = [x for x in self.al[tip] if (x in unvisited) and (x not in queue)]
                 queue += adj
 
                 queue.remove(tip)
