@@ -378,8 +378,7 @@ class Window(QtGui.QWidget):
         am = self.im2am(im)
         self.am2al(am)
 
-    @staticmethod
-    def im2am(im) -> list:
+    def im2am(self, im) -> list:
         """
         Convert incidence matrix to adjacency matrix
         :param im:
@@ -397,8 +396,12 @@ class Window(QtGui.QWidget):
                 c = im[v].index(2)
                 am[c][c] = 1
             else:
-                row = im[v].index(-1)
-                col = im[v].index(1)
+                try:
+                    row = im[v].index(-1)
+                    col = im[v].index(1)
+                except ValueError:
+                    self.status.setText("Error: Invalid vertice")
+                    return
                 am[row][col] = 1
 
         return am
