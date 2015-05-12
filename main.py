@@ -218,10 +218,10 @@ class Window(QtGui.QWidget):
         unvisited = list(x for x in range(len(self.al)))
         queue = [node]
 
-        while len(unvisited) > 0:
-            if len(queue) == 0:
+        while unvisited:
+            if not queue:
                 queue.append(unvisited[0])
-            while len(queue) > 0:
+            while queue:
                 tip = queue[0]              # Remember the begining of queue
 
                 unvisited.remove(tip)
@@ -249,7 +249,6 @@ class Window(QtGui.QWidget):
 
                 queue.remove(tip)
 
-        print()
         # Transform the span tree in a printable form
         span_tree = [[str(x+1) for x in row]for row in span_tree if row]
         for i in range(len(span_tree)):
