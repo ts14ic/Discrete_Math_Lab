@@ -214,42 +214,24 @@ class Window(QtGui.QWidget):
                 self.status.setText("Error: No {} element in adjacency list!".format(node+1))
                 return
 
-        span_tree = self.al.copy()
+        span_tree = [[] for _ in range(len(self.al))]
         unvisited = list(x for x in range(len(self.al)))
-        queue = [node]
+        queue = []
 
-        while unvisited:
-            if not queue:
-                queue.append(unvisited[0])
-            while queue:
+        while len(unvisited) > 0:
+            queue.append(unvisited[0])
+            while len(queue) > 0:
                 tip = queue[0]              # Remember the begining of queue
 
-                unvisited.remove(tip)
+                if tip in unvisited:
+                    unvisited.remove(tip)
+                    span_tree[tip].append(tip)
+                    span_tree[tip] += [x for x in self.al[tip] if (x in unvisited) and (x not in queue)]
 
                 # Get all adjacent unvisited nodes and queue them
-                for x in self.al[tip]:
-                    if (x in unvisited) and (x not in queue):
-                        queue.append(x)
-
-                        # find the cycle using another bfs search (s = sub)
-                        sunvisited = [x for x in range(len(span_tree))]
-                        squeue = [x]
-                        while squeue:
-                            stip = squeue[0]
-
-                            sunvisited.remove(stip)
-
-                            adj = [x for x in span_tree[stip] if (x in sunvisited) and (x not in squeue)]
-                            if tip in adj:
-                                span_tree[stip].remove(tip)
-
-                            squeue += adj
-
-                            squeue.remove(stip)
-
+                queue += [x for x in self.al[tip] if (x in unvisited) and (x not in queue)]
                 queue.remove(tip)
 
-        # Transform the span tree in a printable form
         span_tree = [[str(x+1) for x in row]for row in span_tree if row]
         for i in range(len(span_tree)):
             if len(span_tree[i]) != 1:
