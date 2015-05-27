@@ -594,14 +594,80 @@ class Window(QtGui.QWidget):
         Finds the shortest paths with Ford algorithm
         :return:
         """
-        pass
+        if not self.weights:
+            self.status.setText("Error: No weights matrix stored")
+            return
 
     def findpath_kalaba(self) -> list:
         """
         Finds the shortes paths with Kalaba algorithm
         :return:
         """
-        pass
+        if not self.weights:
+            self.status.setText("Error: No weights matrix stored")
+            return
+
+        w = self.weights.copy()
+        nodes = len(w)
+
+        out_paths = []
+        # For all nodes as targets
+        for n in range(nodes):
+            trg = n
+            cur = []
+            prev = []
+
+            # Transpose target column
+            for i in range(nodes):
+                cur.append(w[i][trg])
+
+            # Calculate the shortest path length
+            while cur != prev:
+                prev = cur
+                cur = []
+
+                # Calculate new vector (cur)
+                for e in range(nodes):
+                    tmp = []
+                    for c in range(nodes):
+                        if (w[e][c] != '+') and (prev[c] != '+'):
+                            tmp.append(w[e][c] + prev[c])
+                    if tmp:
+                        tmp = min(tmp)
+                    else:
+                        tmp = '+'
+                    cur.append(tmp)
+
+            # Rebuild paths
+            paths = []
+            queue = deque([[0]])
+            while queue:
+                path = queue.popleft()
+                tip = path[len(path)-1]
+
+                if tip == trg:
+                    paths.append(path)
+
+                for j in range(nodes):
+                    if tip == j:
+                        continue
+                    if (cur[tip] == '+') or (w[tip][j] == '+'):
+                        continue
+                    if (cur[tip] - w[tip][j]) == cur[j]:
+                        queue.append(path[:] + [j])
+
+            # Format them for printing
+            paths = "\n".join("->".join(str(x) for x in row) for row in paths)
+            out_paths.append(paths)
+
+        # Format the pathes further for printing
+        for x in range(len(out_paths)):
+            out_paths[x] = "Shortest paths to [{}]:\n{}\n".format(x, out_paths[x])
+        out_paths = "\n".join(out_paths)
+
+        QtGui.QMessageBox.information(QtGui.QMessageBox(), "Shortest paths", out_paths, QtGui.QMessageBox.Ok)
+        self.status.setText("Status: Ok...")
+
 
     def al2im(self) -> list:
         """
