@@ -3,7 +3,6 @@ import sys
 import re
 from collections import deque
 
-
 class Window(QtGui.QWidget):
     """
     Discrete Math program main window
@@ -34,6 +33,7 @@ class Window(QtGui.QWidget):
         self.combo_input.addItem("Incidence Matrix")
         self.combo_input.addItem("Adjacency Matrix")
         self.combo_input.addItem("Adjacency List")
+        self.combo_input.addItem("Weighted Matrix")
         box.addWidget(self.combo_input, 1, 0)
 
         # Setting input text area
@@ -49,6 +49,7 @@ class Window(QtGui.QWidget):
         self.combo_output.addItem("Incidence Matrix")
         self.combo_output.addItem("Adjacency Matrix")
         self.combo_output.addItem("Adjacency List")
+        self.combo_output.addItem("Weighted List")
         box.addWidget(self.combo_output, 1, 1)
 
         # Setting the apply button and connect it to processing code
@@ -67,25 +68,38 @@ class Window(QtGui.QWidget):
 
         # Setting the search buttons
         buttons_search = QtGui.QHBoxLayout()
-        button_dfs = QtGui.QPushButton("Perform DFS")
+        button_dfs = QtGui.QPushButton("DFS")
         button_dfs.clicked.connect(self.perform_dfs)
         buttons_search.addWidget(button_dfs)
 
         # Setting BFS button
-        button_bfs = QtGui.QPushButton("Perform BFS")
+        button_bfs = QtGui.QPushButton("BFS")
         button_bfs.clicked.connect(self.perform_bfs)
         buttons_search.addWidget(button_bfs)
 
-        box.addLayout(buttons_search, 4, 0)
-
-        # Setting the spanning tree button
-        button_spantree = QtGui.QPushButton("Get spanning tree")
+        # Setting span tree search button
+        button_spantree = QtGui.QPushButton("Span tree")
         button_spantree.clicked.connect(self.get_span_tree)
-        box.addWidget(button_spantree, 4, 1)
+        buttons_search.addWidget(button_spantree)
+
+        box.addLayout(buttons_search, 4, 0)
 
         # Setting the status label for error reporting
         self.status = QtGui.QLabel("Status: Ok...")
-        box.addWidget(self.status, 5, 0)
+        box.addWidget(self.status, 5, 0, 1, 2)
+
+        buttons_paths = QtGui.QHBoxLayout()
+        box.addLayout(buttons_paths, 4, 1)
+
+        # Setting Ford algorithm button
+        btn = QtGui.QPushButton("Find Path (F)")
+        btn.clicked.connect(self.findpath_ford)
+        buttons_paths.addWidget(btn)
+
+        # Setting Belman-Kalaba algorithm
+        btn = QtGui.QPushButton("Find Path (BK)")
+        btn.clicked.connect(self.findpath_kalaba)
+        buttons_paths.addWidget(btn)
 
         # Creating a class-scope adjacency list and oriented toggle option
         self.al = list()
@@ -256,13 +270,22 @@ class Window(QtGui.QWidget):
             self.get_am()
         elif self.combo_input.currentIndex() == 2:
             self.get_al()
+        elif self.combo_input.currentIndex() == 3:
+            self.combo_output.setCurrentIndex(3)
+            self.get_weights()
+
+        if self.combo_input.currentIndex() != 3:
+            if self.combo_output.currentIndex() == 3:
+                self.combo_output.setCurrentIndex(2)
 
         if self.combo_output.currentIndex() == 0:
             self.print_im()
-        if self.combo_output.currentIndex() == 1:
+        elif self.combo_output.currentIndex() == 1:
             self.print_am()
-        if self.combo_output.currentIndex() == 2:
+        elif self.combo_output.currentIndex() == 2:
             self.print_al()
+        elif self.combo_output.currentIndex() == 3:
+            self.print_weights()
 
     def get_im(self):
         """
@@ -368,6 +391,13 @@ class Window(QtGui.QWidget):
 
         # Store the adjacency list
         self.al = al.copy()
+
+    def get_weights(self):
+        """
+        Stores weights adjacency matrix
+        :return:
+        """
+        pass
 
     def im2al(self, im):
         """
@@ -484,6 +514,27 @@ class Window(QtGui.QWidget):
         al = "\n".join(al.copy())
 
         self.text_output.setText(al)
+
+    def print_weights(self):
+        """
+        Prints an adjacency list, with weights
+        :return:
+        """
+        pass
+
+    def findpath_ford(self) -> list:
+        """
+        Finds the shortest paths with Ford algorithm
+        :return:
+        """
+        pass
+
+    def findpath_kalaba(self) -> list:
+        """
+        Finds the shortes paths with Kalaba algorithm
+        :return:
+        """
+        pass
 
     def al2im(self) -> list:
         """
