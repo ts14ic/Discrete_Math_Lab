@@ -103,6 +103,7 @@ class Window(QtGui.QWidget):
 
         # Creating a class-scope adjacency list and oriented toggle option
         self.al = list()
+        self.weights = list()
         self.dfs_result = str()
         self.bfs_result = str()
 
@@ -391,13 +392,54 @@ class Window(QtGui.QWidget):
 
         # Store the adjacency list
         self.al = al.copy()
+        self.weights = []
 
     def get_weights(self):
         """
         Stores weights adjacency matrix
         :return:
         """
-        pass
+
+        # Get all the lines of input.
+        w = self.text_input.toPlainText().split("\n")
+
+        # Extract digits and "+" signs
+        for i in range(len(w)):
+            w[i] = re.findall(r"0|[1-9]\d*|\+", w[i])
+
+        # Delete empty rows
+        w = [x for x in w if x != []]
+
+        # Int-ify digits
+        w = [[int(x) if x.isdigit() else str(x) for x in w[i]] for i in range(len(w))]
+
+        # Check for input errors
+        for i in w:
+            if len(i) != len(w[0]):
+                self.status.setText("Status: Weight matrix size is not persistent!")
+                return
+        else:
+            if len(w) == 0:
+                self.status.setText("Status: Weight matrix is empty!")
+                return
+            elif len(w[0]) != len(w):
+                self.status.setText("Status: Weight matrix is not square")
+                return
+            else:
+                self.status.setText("Status: Ok...")
+
+        al = []
+        nodes = len(w)
+
+        for n in range(nodes):
+            al.append([n])
+            for v in range(len(w[n])):
+                if (w[n][v] != '+') and (w[n][v] != 0):
+                    al[n].append(v)
+
+        # Send the weighted matrix further
+        self.weights = w.copy()
+        self.al = al.copy()
 
     def im2al(self, im):
         """
@@ -520,7 +562,32 @@ class Window(QtGui.QWidget):
         Prints an adjacency list, with weights
         :return:
         """
-        pass
+        if not self.weights:
+            return
+
+        w = self.weights.copy()
+        al = self.al.copy()
+
+        # Transform stored digits in chars, add {weights}
+        out_al = []
+        for i in range(len(al)):
+            tmp = []
+            for j in range(len(al[i])):
+                if j == 0:
+                    tmp.append(str(al[i][j]))
+                    continue
+                nfrom = al[i][0]
+                nto = al[i][j]
+                weight = w[nfrom][nto]
+                tmp.append(str(al[i][j]) + "{" + str(weight) + "}")
+            out_al.append(tmp)
+
+        # Format the rows for output
+        for i in range(len(out_al)):
+            out_al[i] = str(out_al[i][0]) + ": " + ", ".join(out_al[i][1:])
+        out_al = "\n".join(out_al.copy())
+
+        self.text_output.setText(out_al)
 
     def findpath_ford(self) -> list:
         """
