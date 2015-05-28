@@ -696,7 +696,7 @@ class Window(QtGui.QWidget):
                 out_paths[i][j] = [str(x) for x in out_paths[i][j]]
                 out_paths[i][j] = "->".join(out_paths[i][j])
             out_paths[i] = "\n".join(out_paths[i])
-            out_paths[i] = "Shortest paths to [{}]\n{}\n".format(i, out_paths[i])
+            out_paths[i] = "Shortest paths to {} [{}]\n{}\n".format(i, dist[i], out_paths[i])
         out_paths = "\n".join(out_paths)
 
         QtGui.QMessageBox.information(QtGui.QMessageBox(), "(Ford) Shortest paths", out_paths, QtGui.QMessageBox.Ok)
@@ -713,6 +713,7 @@ class Window(QtGui.QWidget):
 
         w = self.weights.copy()
         nodes = len(w)
+        lengths = [0 for _ in range(nodes)]
 
         out_paths = []
         # For all nodes as targets
@@ -741,6 +742,7 @@ class Window(QtGui.QWidget):
                     else:
                         tmp = '+'
                     cur.append(tmp)
+                lengths[trg] = cur[0]
 
             # Rebuild paths
             paths = []
@@ -766,7 +768,7 @@ class Window(QtGui.QWidget):
 
         # Format the pathes further for printing
         for x in range(len(out_paths)):
-            out_paths[x] = "Shortest paths to [{}]:\n{}\n".format(x, out_paths[x])
+            out_paths[x] = "Shortest paths to {} [{}]:\n{}\n".format(x, lengths[x], out_paths[x])
         out_paths = "\n".join(out_paths)
 
         QtGui.QMessageBox.information(QtGui.QMessageBox(), "(Bellman-Kalaba) Shortest paths", out_paths,
