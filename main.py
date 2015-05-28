@@ -598,6 +598,42 @@ class Window(QtGui.QWidget):
             self.status.setText("Error: No weights matrix stored")
             return
 
+        w = self.weights.copy()
+        nodes = len(w)
+        dist = [None for _ in range(nodes)]
+
+        # Initialize tools
+        src = 0
+        for i in range(nodes):
+            if str(w[src][i]).isdigit():
+                dist[i] = w[src][i]
+
+        # Relax edges
+        for i in range(nodes):
+            for j in range(nodes):
+                # If edge exists
+                if str(w[i][j]).isdigit():
+                    if i == j:
+                        continue
+
+                    # If dist[j] infinite and dist[i] isn't, then the diff is bigger, than weight
+                    if dist[j] is None:
+                        if dist[i] is not None:
+                            dist[j] = dist[i] + w[i][j]
+                            continue
+
+                    # If dist[i] is infinite, then the diff is smaller, than weight
+                    if dist[i] is None:
+                        continue
+
+                    # If all digits are calculable, count them manually
+                    if dist[j] - dist[i] > w[i][j]:
+                        dist[j] = dist[i] + w[i][j]
+                        continue
+
+        # Rebuild paths
+        print(dist)
+
     def findpath_kalaba(self) -> list:
         """
         Finds the shortes paths with Kalaba algorithm
@@ -667,7 +703,6 @@ class Window(QtGui.QWidget):
 
         QtGui.QMessageBox.information(QtGui.QMessageBox(), "Shortest paths", out_paths, QtGui.QMessageBox.Ok)
         self.status.setText("Status: Ok...")
-
 
     def al2im(self) -> list:
         """
