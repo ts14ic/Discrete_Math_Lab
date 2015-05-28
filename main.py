@@ -54,9 +54,15 @@ class Window(QtGui.QWidget):
         box.addWidget(self.combo_output, 1, 1)
 
         # Setting the apply button and connect it to processing code
+        hbox = QtGui.QHBoxLayout()
         button_process = QtGui.QPushButton("Process")
         button_process.clicked.connect(self.process_graph)
-        box.addWidget(button_process, 2, 0)
+        hbox.addWidget(button_process)
+
+        btn = QtGui.QPushButton("Template")
+        btn.clicked.connect(self.fill_template)
+        hbox.addWidget(btn)
+        box.addLayout(hbox, 2, 0)
 
         # Setting the node power button
         button_nodepower = QtGui.QPushButton("Node power")
@@ -395,6 +401,34 @@ class Window(QtGui.QWidget):
         self.al = al.copy()
         self.weights = []
 
+    def fill_template(self):
+        """
+        Fills the template for filling weighted matrix
+        :return:
+        """
+        nodes, ok = QtGui.QInputDialog.getText(QtGui.QInputDialog(), "Template size", "Enter weight matrix size",
+                                               QtGui.QLineEdit.Normal)
+
+        if not ok:
+            return
+
+        nodes = re.search(r"[1-9]\d*", nodes)
+        if not nodes:
+            self.status.setText("Error: Can't get template size")
+            return
+        nodes = int(nodes.group())
+
+        m = [['+' for _ in range(nodes)] for _ in range(nodes)]
+        for (i, j) in zip(range(nodes), range(nodes)):
+            m[i][j] = 0
+
+        m = "\n".join(",".join(str(x) for x in row) for row in m)
+
+        self.text_input.setText(m)
+
+        self.combo_input.setCurrentIndex(3)
+        self.combo_output.setCurrentIndex(3)
+
     def get_weights(self):
         """
         Stores weights adjacency matrix
@@ -649,6 +683,9 @@ class Window(QtGui.QWidget):
                     if tip == j:
                         continue
 
+                    if dist[j] is None or dist[tip] is None:
+                        continue
+
                     if (dist[j] - dist[tip]) == w[tip][j]:
                         queue.append(path[:] + [j])
             out_paths.append(paths)
@@ -732,7 +769,8 @@ class Window(QtGui.QWidget):
             out_paths[x] = "Shortest paths to [{}]:\n{}\n".format(x, out_paths[x])
         out_paths = "\n".join(out_paths)
 
-        QtGui.QMessageBox.information(QtGui.QMessageBox(), "(Bellman-Kalaba) Shortest paths", out_paths, QtGui.QMessageBox.Ok)
+        QtGui.QMessageBox.information(QtGui.QMessageBox(), "(Bellman-Kalaba) Shortest paths", out_paths,
+                                      QtGui.QMessageBox.Ok)
         self.status.setText("Status: Ok...")
 
     def al2im(self) -> list:
