@@ -3,6 +3,7 @@ import sys
 import re
 from collections import deque
 
+
 class Window(QtGui.QWidget):
     """
     Discrete Math program main window
@@ -632,7 +633,37 @@ class Window(QtGui.QWidget):
                         continue
 
         # Rebuild paths
-        print(dist)
+        out_paths = []      # holds the paths to all targets
+        for trg in range(nodes):
+            paths = []
+            queue = deque([[0]])
+            while queue:
+                path = queue.popleft()
+                tip = path[len(path)-1]
+
+                if trg in path:
+                    paths.append(path)
+                    continue
+
+                for j in range(len(dist)):
+                    if tip == j:
+                        continue
+
+                    if (dist[j] - dist[tip]) == w[tip][j]:
+                        queue.append(path[:] + [j])
+            out_paths.append(paths)
+
+        # Format the paths for printing
+        for i in range(len(out_paths)):
+            for j in range(len(out_paths[i])):
+                out_paths[i][j] = [str(x) for x in out_paths[i][j]]
+                out_paths[i][j] = "->".join(out_paths[i][j])
+            out_paths[i] = "\n".join(out_paths[i])
+            out_paths[i] = "Shortest paths to [{}]\n{}\n".format(i, out_paths[i])
+        out_paths = "\n".join(out_paths)
+
+        QtGui.QMessageBox.information(QtGui.QMessageBox(), "(Ford) Shortest paths", out_paths, QtGui.QMessageBox.Ok)
+        self.status.setText("Status: Ok...")
 
     def findpath_kalaba(self) -> list:
         """
@@ -701,7 +732,7 @@ class Window(QtGui.QWidget):
             out_paths[x] = "Shortest paths to [{}]:\n{}\n".format(x, out_paths[x])
         out_paths = "\n".join(out_paths)
 
-        QtGui.QMessageBox.information(QtGui.QMessageBox(), "Shortest paths", out_paths, QtGui.QMessageBox.Ok)
+        QtGui.QMessageBox.information(QtGui.QMessageBox(), "(Bellman-Kalaba) Shortest paths", out_paths, QtGui.QMessageBox.Ok)
         self.status.setText("Status: Ok...")
 
     def al2im(self) -> list:
