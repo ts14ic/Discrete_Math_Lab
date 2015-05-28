@@ -633,12 +633,23 @@ class Window(QtGui.QWidget):
             self.status.setText("Error: No weights matrix stored")
             return
 
+        src, ok = QtGui.QInputDialog.getText(QtGui.QInputDialog(), "Starting pos", "Enter starting position",
+                                             QtGui.QLineEdit.Normal)
+
+        if not ok:
+            return
+
+        src = re.search(r"\d+", src)
+        if not src:
+            self.status.setText("Error: Invalid starting pos")
+            return
+        src = int(src.group())
+
         w = self.weights.copy()
         nodes = len(w)
         dist = [None for _ in range(nodes)]
 
         # Initialize tools
-        src = 0
         for i in range(nodes):
             if str(w[src][i]).isdigit():
                 dist[i] = w[src][i]
@@ -670,7 +681,7 @@ class Window(QtGui.QWidget):
         out_paths = []      # holds the paths to all targets
         for trg in range(nodes):
             paths = []
-            queue = deque([[0]])
+            queue = deque([[src]])
             while queue:
                 path = queue.popleft()
                 tip = path[len(path)-1]
@@ -711,6 +722,18 @@ class Window(QtGui.QWidget):
             self.status.setText("Error: No weights matrix stored")
             return
 
+        src, ok = QtGui.QInputDialog.getText(QtGui.QInputDialog(), "Starting pos", "Enter starting position",
+                                             QtGui.QLineEdit.Normal)
+
+        if not ok:
+            return
+
+        src = re.search(r"\d+", src)
+        if not src:
+            self.status.setText("Error: Invalid starting pos")
+            return
+        src = int(src.group())
+
         w = self.weights.copy()
         nodes = len(w)
         lengths = [0 for _ in range(nodes)]
@@ -742,11 +765,11 @@ class Window(QtGui.QWidget):
                     else:
                         tmp = '+'
                     cur.append(tmp)
-                lengths[trg] = cur[0]
+                lengths[trg] = cur[src]
 
             # Rebuild paths
             paths = []
-            queue = deque([[0]])
+            queue = deque([[src]])
             while queue:
                 path = queue.popleft()
                 tip = path[len(path)-1]
