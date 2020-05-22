@@ -1,10 +1,10 @@
-from PyQt4 import QtGui
+from PyQt5 import QtWidgets
 import sys
 import re
 from collections import deque
 
 
-class Window(QtGui.QWidget):
+class Window(QtWidgets.QWidget):
     """
     Discrete Math program main window
     """
@@ -22,15 +22,15 @@ class Window(QtGui.QWidget):
         # Setting the layout:
         # Gui is divided in 4 parts.
         # A horizontal toolbar + 2 vertical columns for input\output + status label for error reporting.
-        box = QtGui.QGridLayout()
+        box = QtWidgets.QGridLayout()
         self.setLayout(box)
 
         # Setting Input layout:
-        label_input = QtGui.QLabel("Graph Input")
+        label_input = QtWidgets.QLabel("Graph Input")
         box.addWidget(label_input, 0, 0)
 
         # Setting input combo box, which we want to remember
-        self.combo_input = QtGui.QComboBox(self)
+        self.combo_input = QtWidgets.QComboBox(self)
         self.combo_input.addItem("Incidence Matrix")
         self.combo_input.addItem("Adjacency Matrix")
         self.combo_input.addItem("Adjacency List")
@@ -38,15 +38,15 @@ class Window(QtGui.QWidget):
         box.addWidget(self.combo_input, 1, 0)
 
         # Setting input text area
-        self.text_input = QtGui.QTextEdit(self)
+        self.text_input = QtWidgets.QTextEdit(self)
         box.addWidget(self.text_input, 3, 0)
 
         # Setting Output layout:
-        label_output = QtGui.QLabel("Graph Output")
+        label_output = QtWidgets.QLabel("Graph Output")
         box.addWidget(label_output, 0, 1)
 
         # Setting the output combo box to remember
-        self.combo_output = QtGui.QComboBox(self)
+        self.combo_output = QtWidgets.QComboBox(self)
         self.combo_output.addItem("Incidence Matrix")
         self.combo_output.addItem("Adjacency Matrix")
         self.combo_output.addItem("Adjacency List")
@@ -54,57 +54,57 @@ class Window(QtGui.QWidget):
         box.addWidget(self.combo_output, 1, 1)
 
         # Setting the apply button and connect it to processing code
-        hbox = QtGui.QHBoxLayout()
-        button_process = QtGui.QPushButton("Process")
+        hbox = QtWidgets.QHBoxLayout()
+        button_process = QtWidgets.QPushButton("Process")
         button_process.clicked.connect(self.process_graph)
         hbox.addWidget(button_process)
 
-        btn = QtGui.QPushButton("Template")
+        btn = QtWidgets.QPushButton("Template")
         btn.clicked.connect(self.fill_template)
         hbox.addWidget(btn)
         box.addLayout(hbox, 2, 0)
 
         # Setting the node power button
-        button_nodepower = QtGui.QPushButton("Node power")
+        button_nodepower = QtWidgets.QPushButton("Node power")
         button_nodepower.clicked.connect(self.print_node_power)
         box.addWidget(button_nodepower, 2, 1)
 
         # Setting the output text area to remember
-        self.text_output = QtGui.QTextBrowser(self)
+        self.text_output = QtWidgets.QTextBrowser(self)
         box.addWidget(self.text_output, 3, 1)
 
         # Setting the search buttons
-        buttons_search = QtGui.QHBoxLayout()
-        button_dfs = QtGui.QPushButton("DFS")
+        buttons_search = QtWidgets.QHBoxLayout()
+        button_dfs = QtWidgets.QPushButton("DFS")
         button_dfs.clicked.connect(self.perform_dfs)
         buttons_search.addWidget(button_dfs)
 
         # Setting BFS button
-        button_bfs = QtGui.QPushButton("BFS")
+        button_bfs = QtWidgets.QPushButton("BFS")
         button_bfs.clicked.connect(self.perform_bfs)
         buttons_search.addWidget(button_bfs)
 
         # Setting span tree search button
-        button_spantree = QtGui.QPushButton("Span tree")
+        button_spantree = QtWidgets.QPushButton("Span tree")
         button_spantree.clicked.connect(self.get_span_tree)
         buttons_search.addWidget(button_spantree)
 
         box.addLayout(buttons_search, 4, 0)
 
         # Setting the status label for error reporting
-        self.status = QtGui.QLabel("Status: Ok...")
+        self.status = QtWidgets.QLabel("Status: Ok...")
         box.addWidget(self.status, 5, 0, 1, 2)
 
-        buttons_paths = QtGui.QHBoxLayout()
+        buttons_paths = QtWidgets.QHBoxLayout()
         box.addLayout(buttons_paths, 4, 1)
 
         # Setting Ford algorithm button
-        btn = QtGui.QPushButton("Find Path (F)")
+        btn = QtWidgets.QPushButton("Find Path (F)")
         btn.clicked.connect(self.findpath_ford)
         buttons_paths.addWidget(btn)
 
         # Setting Belman-Kalaba algorithm
-        btn = QtGui.QPushButton("Find Path (BK)")
+        btn = QtWidgets.QPushButton("Find Path (BK)")
         btn.clicked.connect(self.findpath_kalaba)
         buttons_paths.addWidget(btn)
 
@@ -188,8 +188,8 @@ class Window(QtGui.QWidget):
             self.status.setText("Error: No adjacency list stored!")
             return
 
-        num, ok = QtGui.QInputDialog.getText(QtGui.QInputDialog(), "Node power", "Enter node number",
-                                             QtGui.QLineEdit.Normal)
+        num, ok = QtWidgets.QInputDialog.getText(QtWidgets.QInputDialog(), "Node power", "Enter node number",
+                                             QtWidgets.QLineEdit.Normal)
         if not ok:
             return
 
@@ -221,8 +221,8 @@ class Window(QtGui.QWidget):
             self.status.setText("Error: No adjacency list stored!")
             return
 
-        node, ok = QtGui.QInputDialog.getText(QtGui.QInputDialog(), "Span tree", "Enter the node to start",
-                                              QtGui.QLineEdit.Normal)
+        node, ok = QtWidgets.QInputDialog.getText(QtWidgets.QInputDialog(), "Span tree", "Enter the node to start",
+                                              QtWidgets.QLineEdit.Normal)
         if not ok:
             return
 
@@ -263,7 +263,7 @@ class Window(QtGui.QWidget):
         # noinspection PyTypeChecker
         span_tree = "\n".join(span_tree)
 
-        QtGui.QMessageBox.information(QtGui.QMessageBox(), "Spanning tree", str(span_tree), QtGui.QMessageBox.Ok)
+        QtWidgets.QMessageBox.information(QtWidgets.QMessageBox(), "Spanning tree", str(span_tree), QtWidgets.QMessageBox.Ok)
         self.status.setText("Status: Ok...")
 
     def process_graph(self):
@@ -298,6 +298,12 @@ class Window(QtGui.QWidget):
     def get_im(self):
         """
         Get the incidence matrix
+        Example input:
+        -1 1  0 0
+         1 0 -1 0
+         0 0  0 2
+         0 0 -1 1
+         Columns are for vertices, rows for edges.
         :return:
         """
 
@@ -406,8 +412,8 @@ class Window(QtGui.QWidget):
         Fills the template for filling weighted matrix
         :return:
         """
-        nodes, ok = QtGui.QInputDialog.getText(QtGui.QInputDialog(), "Template size", "Enter weight matrix size",
-                                               QtGui.QLineEdit.Normal)
+        nodes, ok = QtWidgets.QInputDialog.getText(QtWidgets.QInputDialog(), "Template size", "Enter weight matrix size",
+                                               QtWidgets.QLineEdit.Normal)
 
         if not ok:
             return
@@ -497,19 +503,19 @@ class Window(QtGui.QWidget):
             return
 
         vertices = len(im)
-        nodes = len(im[0])
-        am = [[0]*nodes for _ in range(nodes)]
+        edges = len(im[0])
+        am = [[0]*edges for _ in range(edges)]
 
-        for v in range(vertices):
-            if 2 in im[v]:
-                c = im[v].index(2)
+        for vertexIdx in range(vertices):
+            if 2 in im[vertexIdx]:  # If vertex pointing in itself
+                c = im[vertexIdx].index(2)
                 am[c][c] = 1
             else:
                 try:
-                    row = im[v].index(-1)
-                    col = im[v].index(1)
+                    row = im[vertexIdx].index(-1)
+                    col = im[vertexIdx].index(1)
                 except ValueError:
-                    self.status.setText("Error: Invalid vertice")
+                    self.status.setText("Error: Invalid vertice, the graph should be directed")
                     return
                 am[row][col] = 1
 
@@ -633,8 +639,8 @@ class Window(QtGui.QWidget):
             self.status.setText("Error: No weights matrix stored")
             return
 
-        src, ok = QtGui.QInputDialog.getText(QtGui.QInputDialog(), "Starting pos", "Enter starting position",
-                                             QtGui.QLineEdit.Normal)
+        src, ok = QtWidgets.QInputDialog.getText(QtWidgets.QInputDialog(), "Starting pos", "Enter starting position",
+                                             QtWidgets.QLineEdit.Normal)
 
         if not ok:
             return
@@ -710,7 +716,7 @@ class Window(QtGui.QWidget):
             out_paths[i] = "Shortest paths to {} [{}]\n{}\n".format(i, dist[i], out_paths[i])
         out_paths = "\n".join(out_paths)
 
-        QtGui.QMessageBox.information(QtGui.QMessageBox(), "(Ford) Shortest paths", out_paths, QtGui.QMessageBox.Ok)
+        QtWidgets.QMessageBox.information(QtWidgets.QMessageBox(), "(Ford) Shortest paths", out_paths, QtWidgets.QMessageBox.Ok)
         self.status.setText("Status: Ok...")
 
     def findpath_kalaba(self) -> list:
@@ -722,8 +728,8 @@ class Window(QtGui.QWidget):
             self.status.setText("Error: No weights matrix stored")
             return
 
-        src, ok = QtGui.QInputDialog.getText(QtGui.QInputDialog(), "Starting pos", "Enter starting position",
-                                             QtGui.QLineEdit.Normal)
+        src, ok = QtWidgets.QInputDialog.getText(QtWidgets.QInputDialog(), "Starting pos", "Enter starting position",
+                                             QtWidgets.QLineEdit.Normal)
 
         if not ok:
             return
@@ -794,8 +800,8 @@ class Window(QtGui.QWidget):
             out_paths[x] = "Shortest paths to {} [{}]:\n{}\n".format(x, lengths[x], out_paths[x])
         out_paths = "\n".join(out_paths)
 
-        QtGui.QMessageBox.information(QtGui.QMessageBox(), "(Bellman-Kalaba) Shortest paths", out_paths,
-                                      QtGui.QMessageBox.Ok)
+        QtWidgets.QMessageBox.information(QtWidgets.QMessageBox(), "(Bellman-Kalaba) Shortest paths", out_paths,
+                                      QtWidgets.QMessageBox.Ok)
         self.status.setText("Status: Ok...")
 
     def al2im(self) -> list:
@@ -850,7 +856,7 @@ class Window(QtGui.QWidget):
 
 
 def main():
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     w = Window()
     w.show()
     sys.exit(app.exec())
